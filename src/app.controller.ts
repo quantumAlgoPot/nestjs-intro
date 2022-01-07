@@ -1,13 +1,27 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Header } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ResponseService } from './utils/response/response.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly responseService: ResponseService,
+  ) {}
 
   @Get()
-  getDouble(): string {
-    return this.appService.getNo();
+  @Header('Content-Type', 'application/json')
+  getDouble(): any {
+    try {
+      const res = this.responseService.successResponse(
+        true,
+        this.appService.getNo(),
+      );
+      console.log(res);
+      return res;
+    } catch (error) {
+      return this.responseService.badRequestResponse(error.message);
+    }
   }
 
   @Get()
