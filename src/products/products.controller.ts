@@ -1,12 +1,25 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ResponseService } from 'src/utils/response/response.service';
 import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
-  constructor(protected productService: ProductsService) {}
+  constructor(
+    protected productService: ProductsService,
+    public readonly responseService: ResponseService,
+  ) {}
 
   @Post()
-  addProduct(title: string, desc: string, price: string): any {
-    this.productService.insertProduct(title, desc, price);
+  addProduct(
+    @Body('title') prodTitle: string,
+    @Body('desc') prodDesc: string,
+    @Body('price') prodPprice: string,
+  ): { title: string; desc: string; price: string } {
+    const generatedId = this.productService.insertProduct(
+      prodTitle,
+      prodDesc,
+      prodPprice,
+    );
+    return this.responseService.successResponse(true, { id: generatedId });
   }
 }

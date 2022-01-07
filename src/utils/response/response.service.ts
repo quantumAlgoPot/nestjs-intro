@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ResponseService {
-  successResponse(status = false, result = []): any {
+  successResponse(status = false, result): any {
     if (status !== false) {
       return {
         status: true,
