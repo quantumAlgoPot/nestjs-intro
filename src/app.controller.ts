@@ -13,19 +13,12 @@ export class AppController {
   @Header('Content-Type', 'application/json')
   getDouble(): any {
     try {
-      const res = this.responseService.successResponse(
+      return this.responseService.successResponse(
         true,
-        this.appService.getNo(),
+        this.appService.getHello(),
       );
-      console.log(res);
-      return res;
     } catch (error) {
       return this.responseService.badRequestResponse(error.message);
     }
-  }
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
   }
 }

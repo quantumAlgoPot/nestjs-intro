@@ -3,14 +3,19 @@ import { Products } from './products';
 
 @Injectable()
 export class ProductsService {
-  products: Products[] = [];
+  private products: Products[] = [];
 
   insertProduct(title: string, desc: string, price: string) {
     const newProduct = new Products(new Date().toString(), title, desc, price);
     this.products.push(newProduct);
+    return newProduct?.id;
   }
 
-  getProduct() {
-    return 'abc';
+  getAllProducts() {
+    return [...this.products];
+  }
+
+  getSingleProduct(productId: string) {
+    return this.products.find((product) => product.id == productId);
   }
 }
