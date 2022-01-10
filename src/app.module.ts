@@ -5,10 +5,11 @@ import { ResponseService } from './utils/response/response.service';
 import { ProductsController } from './products/products.controller';
 import { ProductsService } from './products/products.service';
 import { ProductsModule } from './products/products.module';
+import { ConsoleService } from './utils/console/console.service';
 
 @Module({
   imports: [ProductsModule],
   controllers: [AppController, ProductsController],
-  providers: [AppService, ResponseService, ProductsService],
+  providers: [AppService, ResponseService, ProductsService, ConsoleService],
 })
 export class AppModule {}

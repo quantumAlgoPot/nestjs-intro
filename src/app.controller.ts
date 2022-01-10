@@ -11,7 +11,7 @@ export class AppController {
 
   @Get()
   @Header('Content-Type', 'application/json')
-  getDouble(): any {
+  getHello(): any {
     try {
       return this.responseService.successResponse(
         true,
