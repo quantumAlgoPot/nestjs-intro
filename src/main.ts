@@ -12,6 +12,7 @@ import {
 } from '@nestjs/platform-fastify';
 declare const module: any;
 const consoleService = new ConsoleService();
+import { ValidationPipe } from '@nestjs/common'; // import built-in ValidationPipe
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,17 +21,18 @@ async function bootstrap() {
     new FastifyAdapter(),
   ); */
   app.enableCors();
-  app.enableVersioning();
-  app.useGlobalInterceptors();
-  app.use(cookieParser()); // For Cookies
-  app.use(
+  // app.enableVersioning();
+  // app.useGlobalInterceptors();
+  // app.use(cookieParser()); // For Cookies
+  /*app.use(
     // for Session
     session({
       secret: 'my-secret',
       resave: false,
       saveUninitialized: false,
     }),
-  );
+  );*/
+  app.useGlobalPipes(new ValidationPipe()); // For Enabling DTOs
   //app.use(csurf()); // Cross-site request forgery (also known as CSRF or XSRF)
   // app.use(helmet());
 

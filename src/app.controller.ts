@@ -12,13 +12,13 @@ export class AppController {
   @Get()
   @Header('Content-Type', 'application/json')
   getHello(): any {
-    try {
-      return this.responseService.successResponse(
-        true,
-        this.appService.getHello(),
-      );
-    } catch (error) {
-      return this.responseService.badRequestResponse(error.message);
-    }
+    // try {
+    //   return this.responseService.successResponse(
+    //     true,
+    //     this.appService.getHello(),
+    //   );
+    // } catch (error) {
+    //   return this.responseService.badRequestResponse(error.message);
+    // }
   }
 }

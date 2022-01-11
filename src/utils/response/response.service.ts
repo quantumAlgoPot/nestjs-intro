@@ -1,32 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Injectable()
 export class ResponseService {
-  successResponse(status = false, result): any {
+  successResponse(status = false, result, @Res() res: Response) {
     if (status !== false) {
-      return {
+      res.status(HttpStatus.OK).json({
         status: true,
         statusCode: 200,
         message: 'success',
         payload: result,
-      };
+      });
     } else {
-      return {
+      res.status(HttpStatus.OK).json({
         status: false,
         statusCode: 200,
         message: 'success',
         payload: 'No Data Found!',
-      };
+      });
     }
   }
 
-  badRequestResponse(result = []): any {
-    return {
+  badRequestResponse(result, @Res() res: Response) {
+    res.status(HttpStatus.BAD_REQUEST).json({
       status: false,
       statusCode: 400,
       message: 'Bad Request',
-      error: result,
-    };
+      payload: result,
+    });
   }
 
   serverFailureResponse(result = []): any {

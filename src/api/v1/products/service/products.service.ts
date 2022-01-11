@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Products } from './products';
+import { Products } from '../interface/products';
 
 @Injectable()
 export class ProductsService {
