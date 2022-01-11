@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConsoleService } from './utils/console/console.service';
@@ -30,7 +31,7 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
-  app.use(csurf()); // Cross-site request forgery (also known as CSRF or XSRF)
+  //app.use(csurf()); // Cross-site request forgery (also known as CSRF or XSRF)
   // app.use(helmet());
 
   if (module.hot) {
@@ -38,6 +39,7 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
+  consoleService.print('App is lising on 127.0.0.0:3000');
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
