@@ -14,12 +14,26 @@ import { BodyMiddleware } from './middleware/body.middleware';
 import { ParamMiddleware } from './middleware/param.middleware';
 import { UserMiddleware } from './middleware/user.middleware';
 import { UserService } from './service/user.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UserEntity, UserSchema } from './entity/user.entity';
 
 @Module({
   controllers: [UserController],
-  imports: [forwardRef(() => AuthModule)],
-  providers: [UserService, ResponseService, ConsoleService, AuthService],
-  exports: [UserService],
+  imports: [
+    forwardRef(() => AuthModule),
+    MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
+  ],
+  providers: [
+    UserService,
+    ResponseService,
+    ConsoleService,
+    AuthService,
+    UserEntity,
+  ],
+  exports: [
+    UserService,
+    MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
+  ],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
