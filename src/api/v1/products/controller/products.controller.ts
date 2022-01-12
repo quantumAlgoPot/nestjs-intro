@@ -49,7 +49,7 @@ export class ProductsController {
       );
       this.responseService.successResponse(true, { id: generatedId }, res);
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
@@ -62,7 +62,7 @@ export class ProductsController {
         res,
       );
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
@@ -81,7 +81,7 @@ export class ProductsController {
         );
       }
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
@@ -111,17 +111,17 @@ export class ProductsController {
         );
       }
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
   @Delete(':id')
-  removeProduct(@Param('id') prodId: string) {
+  removeProduct(@Param('id') prodId: string, @Res() res: Response) {
     try {
       this.productService.deleteProduct(prodId);
       return null;
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 }

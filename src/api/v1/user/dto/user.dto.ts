@@ -8,10 +8,12 @@ import {
   IsDate,
   IsDecimal,
   IsNumber,
+  IsOptional,
 } from 'class-validator';
 
 export class userDto {
   @IsNumber()
+  @IsOptional()
   id: number;
 
   @IsNotEmpty()

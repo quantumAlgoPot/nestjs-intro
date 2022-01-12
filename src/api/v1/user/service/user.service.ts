@@ -27,16 +27,22 @@ export class UserService {
   }
 
   updateSingleUser(user: User) {
-    const [userObj, index] = this.findUser(user.id);
-    const updateUSer = { ...userObj };
-    if (user.username) {
-      updateUSer.username = user.username;
+    if (this.findUser(user.id) != null) {
+      const [userObj, index] = this.findUser(user.id);
+      this.consoleService.print('On line 32 of User.Service.ts');
+      const updateUSer = { ...userObj };
+      if (user.username) {
+        updateUSer.username = user.username;
+      }
+      if (user.password) {
+        updateUSer.password = user.password;
+      }
+      this.user[index] = updateUSer;
+      return this.user;
+    } else {
+      this.consoleService.print('On line 43 of User.Service.ts');
+      return null;
     }
-    if (user.password) {
-      updateUSer.password = user.password;
-    }
-    this.user[index] = updateUSer;
-    return this.user;
   }
 
   deleteUser(userId: number) {
@@ -53,7 +59,7 @@ export class UserService {
       this.consoleService.print('returning null');
       return null;
     }
-    this.consoleService.print(user + '' + userIndex);
+    this.consoleService.print('user' + user + ' userIndex ' + userIndex);
     return [user, userIndex];
   }
 

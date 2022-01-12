@@ -32,21 +32,21 @@ export class UserController {
   @Post()
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
-  addProduct(@Body() User: userDto, @Res() res: Response) {
+  addProduct(@Body() user: userDto, @Res() res: Response) {
     try {
-      validate(User).then((errors) => {
+      validate(user).then((errors) => {
         if (errors.length > 0) {
           this.responseService.badRequestResponse(errors, res);
         }
       });
 
       const generatedId = this.userService.insertUser(
-        User.username,
-        User.password,
+        user.username,
+        user.password,
       );
       this.responseService.successResponse(true, { id: generatedId }, res);
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
@@ -59,7 +59,7 @@ export class UserController {
         res,
       );
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
@@ -78,7 +78,7 @@ export class UserController {
         );
       }
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
@@ -87,14 +87,14 @@ export class UserController {
   @UsePipes(new ValidationPipe({ transform: true }))
   updateSingleUser(
     @Param('id') idOfUser: number,
-    @Body() user: userDto,
+    @Body() user: User,
     @Res() res: Response,
   ) {
     try {
       user.id = idOfUser;
       const updatedUser = this.userService.updateSingleUser(user);
-      this.consoleService.print(updatedUser + 'on line');
       if (updatedUser) {
+        this.consoleService.print([...updatedUser] + 'on line');
         return this.responseService.successResponse(
           true,
           [...updatedUser],
@@ -108,17 +108,17 @@ export class UserController {
         );
       }
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
   @Delete(':id')
-  removeUser(@Param('id') userId: number) {
+  removeUser(@Param('id') userId: number, @Res() res: Response) {
     try {
       this.userService.deleteUser(userId);
       return null;
     } catch (error) {
-      return this.responseService.serverFailureResponse(error.message);
+      return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 }

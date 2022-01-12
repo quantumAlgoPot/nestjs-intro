@@ -30,13 +30,13 @@ export class ResponseService {
     });
   }
 
-  serverFailureResponse(result = []): any {
-    return {
+  serverFailureResponse(result = [], @Res() res: Response) {
+    res.status(HttpStatus.BAD_REQUEST).json({
       status: true,
       statusCode: 500,
       message: 'Internal Server Error!',
       payload: result,
-    };
+    });
   }
 
   dbError(result = []): any {

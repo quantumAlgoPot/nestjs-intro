@@ -4,20 +4,18 @@ import { ConsoleService } from 'src/utils/console/console.service';
 import { ResponseService } from 'src/utils/response/response.service';
 
 @Injectable()
-export class UserMiddleware implements NestMiddleware {
+export class ParamMiddleware implements NestMiddleware {
   constructor(
-    private responseService: ResponseService,
+    private readonly responseService: ResponseService,
     private readonly consoleService: ConsoleService,
   ) {}
-
   use(req: any, res: any, next: () => void) {
     try {
-      this.consoleService.print('On line 14 of User.Update.Middleware.ts');
+      req.params.id = parseInt(req.params.id);
       const schema = Joi.object().keys({
-        username: Joi.string().optional(),
-        password: Joi.string().optional(),
+        id: Joi.number().required(),
       });
-      const { error } = schema.validate(req.body, {
+      const { error } = schema.validate(req.params, {
         abortEarly: false,
       });
 
