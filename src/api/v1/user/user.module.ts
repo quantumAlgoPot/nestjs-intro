@@ -16,6 +16,7 @@ import { UserMiddleware } from './middleware/user.middleware';
 import { UserService } from './service/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserEntity, UserSchema } from './entity/user.entity';
+import { DuplicateMiddleware } from './middleware/duplicate.middleware';
 
 @Module({
   controllers: [UserController],
@@ -23,13 +24,7 @@ import { UserEntity, UserSchema } from './entity/user.entity';
     forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
   ],
-  providers: [
-    UserService,
-    ResponseService,
-    ConsoleService,
-    AuthService,
-    UserEntity,
-  ],
+  providers: [UserService, ResponseService, ConsoleService, AuthService],
   exports: [
     UserService,
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
@@ -51,5 +46,8 @@ export class UserModule implements NestModule {
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/:id', method: RequestMethod.DELETE },
       );
+    consumer
+      .apply(DuplicateMiddleware)
+      .forRoutes({ path: 'user', method: RequestMethod.POST });
   }
 }

@@ -15,47 +15,77 @@ export class UserService {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  insertUser(username: string, password: string) {
-    const newUser = new User(
-      Math.floor(Math.random() * 1000) + 1,
-      username,
-      password,
-    );
-    this.user.push(newUser);
-    return newUser?.id;
+  async insertUser(user: User): Promise<UserEntity> {
+    const newUser = new this.userModel(user);
+    await newUser.save();
+    return newUser?._id;
   }
 
-  getAllUsers() {
-    return [...this.user];
+  async getAllUsers(): Promise<UserEntity[]> {
+    return await this.userModel
+      .find({ isDeleted: false })
+      .select('username password');
   }
 
-  getSingleUser(userId: number) {
-    return this.user.find((product) => product.id == userId);
+  async getSingleUser(userId: number): Promise<UserEntity> {
+    return await this.userModel
+      .findOne({
+        _id: userId,
+        isDeleted: false,
+      })
+      .select('username password')
+      .lean();
   }
 
-  updateSingleUser(user: User) {
-    if (this.findUser(user.id) != null) {
-      const [userObj, index] = this.findUser(user.id);
-      this.consoleService.print('On line 32 of User.Service.ts');
-      const updateUSer = { ...userObj };
+  async getSingleUserByName(username: string): Promise<UserEntity> {
+    return await this.userModel
+      .findOne({
+        username: username,
+        isDeleted: false,
+      })
+      .select('username password')
+      .lean();
+  }
+
+  async updateSingleUser(user: User) {
+    this.consoleService.print(user);
+    if ((await this.getSingleUser(user.id)) != null) {
+      // eslint-disable-next-line no-var
+      var toBeUpdatedUser: any = {};
       if (user.username) {
-        updateUSer.username = user.username;
+        toBeUpdatedUser.username = user.username;
       }
       if (user.password) {
-        updateUSer.password = user.password;
+        toBeUpdatedUser.password = user.password;
       }
-      this.user[index] = updateUSer;
-      return this.user;
+      return await this.userModel
+        .findByIdAndUpdate(
+          {
+            _id: user.id,
+            isDeleted: false,
+          },
+          toBeUpdatedUser,
+        )
+        .select('username, password')
+        .lean();
     } else {
       this.consoleService.print('On line 43 of User.Service.ts');
       return null;
     }
   }
 
-  deleteUser(userId: number) {
-    console.log(userId);
-    const index = this.findUser(userId)[1];
-    this.user.splice(index, 1);
+  async deleteUser(userId: number): Promise<UserEntity> {
+    return await this.userModel
+      .findByIdAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          isDeleted: true,
+        },
+      )
+      .select('username')
+      .lean();
   }
 
   private findUser(id: number): [User, number] {

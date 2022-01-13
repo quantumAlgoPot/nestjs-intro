@@ -15,6 +15,24 @@ export class UserEntity {
 
   @Prop({ default: '', required: true })
   password: string;
+
+  @Prop({ default: false, required: false })
+  isDeleted: boolean;
+
+  @Prop({ default: null, required: false })
+  deletedAt: Date;
+
+  @Prop({ default: true, required: false })
+  isCreated: boolean;
+
+  @Prop({ default: Date.now, required: false })
+  createdAt: Date;
+
+  @Prop({ default: false, required: false })
+  isUpdated: boolean;
+
+  @Prop({ default: null, required: false })
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserEntity);

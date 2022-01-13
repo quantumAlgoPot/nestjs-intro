@@ -39,12 +39,12 @@ export class ResponseService {
     });
   }
 
-  dbError(result = []): any {
-    return {
+  dbError(result: string, @Res() res: Response): any {
+    res.status(HttpStatus.BAD_REQUEST).json({
       status: false,
       statusCode: 533,
       message: 'Db Error!',
       payload: result,
-    };
+    });
   }
 }

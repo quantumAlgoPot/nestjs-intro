@@ -32,7 +32,7 @@ export class UserController {
   @Post()
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
-  addProduct(@Body() user: userDto, @Res() res: Response) {
+  async addProduct(@Body() user: userDto, @Res() res: Response) {
     try {
       validate(user).then((errors) => {
         if (errors.length > 0) {
@@ -40,10 +40,7 @@ export class UserController {
         }
       });
 
-      const generatedId = this.userService.insertUser(
-        user.username,
-        user.password,
-      );
+      const generatedId = await this.userService.insertUser(user);
       this.responseService.successResponse(true, { id: generatedId }, res);
     } catch (error) {
       return this.responseService.serverFailureResponse(error.message, res);
@@ -51,11 +48,11 @@ export class UserController {
   }
 
   @Get()
-  retrieveAllUsers(@Res() res: Response) {
+  async retrieveAllUsers(@Res() res: Response) {
     try {
       return this.responseService.successResponse(
         true,
-        this.userService.getAllUsers(),
+        await this.userService.getAllUsers(),
         res,
       );
     } catch (error) {
@@ -64,12 +61,12 @@ export class UserController {
   }
 
   @Get(':id')
-  retrievSingleUser(@Param('id') UserId: number, @Res() res: Response) {
+  async retrievSingleUser(@Param('id') UserId: number, @Res() res: Response) {
     try {
-      const User = this.userService.getSingleUser(UserId);
+      const User = await this.userService.getSingleUser(UserId);
       this.consoleService.print(User);
       if (User) {
-        return this.responseService.successResponse(true, User, res);
+        return this.responseService.successResponse(true, User[0], res);
       } else {
         return this.responseService.successResponse(
           false,
@@ -85,21 +82,16 @@ export class UserController {
   @Patch(':id')
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
-  updateSingleUser(
-    @Param('id') idOfUser: number,
+  async updateSingleUser(
+    @Param('id') idOfUser: any,
     @Body() user: User,
     @Res() res: Response,
   ) {
     try {
       user.id = idOfUser;
-      const updatedUser = this.userService.updateSingleUser(user);
+      const updatedUser = await this.userService.updateSingleUser(user);
       if (updatedUser) {
-        this.consoleService.print([...updatedUser] + 'on line');
-        return this.responseService.successResponse(
-          true,
-          [...updatedUser],
-          res,
-        );
+        return this.responseService.successResponse(true, updatedUser, res);
       } else {
         return this.responseService.successResponse(
           false,
@@ -113,10 +105,10 @@ export class UserController {
   }
 
   @Delete(':id')
-  removeUser(@Param('id') userId: number, @Res() res: Response) {
+  async removeUser(@Param('id') userId: number, @Res() res: Response) {
     try {
-      this.userService.deleteUser(userId);
-      return null;
+      const deletedUser = await this.userService.deleteUser(userId);
+      return this.responseService.successResponse(true, deletedUser, res);
     } catch (error) {
       return this.responseService.serverFailureResponse(error.message, res);
     }

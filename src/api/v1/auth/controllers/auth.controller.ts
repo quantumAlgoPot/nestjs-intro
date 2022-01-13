@@ -18,6 +18,7 @@ import {
 import { ConsoleService } from 'src/utils/console/console.service';
 import { ResponseService } from 'src/utils/response/response.service';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard as AuthenticationGuard } from '../guard/auth.guard';
 
 // import { userDto } from '../dto/user.dto';
 // import { User } from '../interface/user';
@@ -33,10 +34,16 @@ export class AuthController {
     public readonly consoleService: ConsoleService,
   ) {}
 
-  @UseGuards(AuthGuard('local'))
+  // @UseGuards(AuthGuard('local'))
+  @UseGuards(AuthenticationGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
-  async login(@Body() User: any) {
-    return User;
+  async login(@Body() User: any, @Res() res: Response) {
+    try {
+    } catch (error) {
+      return this.responseService.serverFailureResponse(error.message, res);
+    }
   }
   //   @Post()
   //   @UseInterceptors(ClassSerializerInterceptor)
