@@ -56,4 +56,9 @@ export class ConfigService {
     // this.consoleService.print(this.envConfig.MONGO_URI);
     return this.envConfig.MONGO_URI;
   }
+
+  get jwtKey(): string {
+    // this.consoleService.print(this.envConfig.MONGO_URI);
+    return this.envConfig.jwt_token;
+  }
 }

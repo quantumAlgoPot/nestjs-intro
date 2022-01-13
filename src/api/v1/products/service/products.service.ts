@@ -1,61 +1,83 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ConsoleService } from 'src/utils/console/console.service';
+import { ProductsDocument, ProductsEntity } from '../entity/products.entity';
 import { Products } from '../interface/products';
 
 @Injectable()
 export class ProductsService {
+  constructor(
+    @InjectModel(ProductsEntity.name)
+    private readonly productsModel: Model<ProductsDocument>,
+    private readonly consoleService: ConsoleService,
+  ) {}
   private products: Products[] = [];
 
-  insertProduct(title: string, desc: string, price: string) {
-    const newProduct = new Products(
-      (Math.floor(Math.random() * 1000) + 1).toString(),
-      title,
-      desc,
-      price,
-    );
-    this.products.push(newProduct);
-    return newProduct?.id;
+  async insertProduct(product: Products): Promise<ProductsEntity> {
+    const newProduct = new this.productsModel(product);
+    await newProduct.save();
+    return newProduct?._id;
   }
 
-  getAllProducts() {
-    return [...this.products];
+  async getAllProducts() {
+    return await this.productsModel
+      .find({ isDeleted: false })
+      .select('title description price');
   }
 
-  getSingleProduct(productId: string) {
-    return this.products.find((product) => product.id == productId);
+  async getSingleProduct(productId: number) {
+    return await this.productsModel
+      .findOne({
+        _id: productId,
+        isDeleted: false,
+      })
+      .select('title description price')
+      .lean();
   }
 
-  updateSingleProduct(
-    productId: string,
-    title: string,
-    desc: string,
-    price: string,
-  ) {
-    const [product, index] = this.findProduct(productId);
-    const updatedProduct = { ...product };
-    if (title) {
-      updatedProduct.title = title;
-    }
-    if (desc) {
-      updatedProduct.description = desc;
-    }
-    if (price) {
-      updatedProduct.price = price;
-    }
-    this.products[index] = updatedProduct;
-    return this.products;
-  }
-
-  deleteProduct(prodId: string) {
-    const index = this.findProduct(prodId)[1];
-    this.products.splice(index, 1);
-  }
-
-  private findProduct(id: string): [Products, number] {
-    const productIndex = this.products.findIndex((prod) => prod.id === id);
-    const product = this.products[productIndex];
-    if (!product) {
+  async updateSingleProduct(product: Products) {
+    this.consoleService.print(product);
+    if ((await this.getSingleProduct(product.id)) != null) {
+      // eslint-disable-next-line no-var
+      var toBeUpdatedProduct: any = {};
+      if (product.title) {
+        toBeUpdatedProduct.title = product.title;
+      }
+      if (product.description) {
+        toBeUpdatedProduct.description = product.description;
+      }
+      if (product.price) {
+        toBeUpdatedProduct.price = product.price;
+      }
+      return await this.productsModel
+        .findByIdAndUpdate(
+          {
+            _id: product.id,
+            isDeleted: false,
+          },
+          toBeUpdatedProduct,
+        )
+        .select('username, password')
+        .lean();
+    } else {
+      this.consoleService.print('On line 43 of User.Service.ts');
       return null;
     }
-    return [product, productIndex];
+    return null;
+  }
+
+  async deleteProduct(productId: string) {
+    return await this.productsModel
+      .findByIdAndUpdate(
+        {
+          _id: productId,
+        },
+        {
+          isDeleted: true,
+        },
+      )
+      .select('title')
+      .lean();
   }
 }

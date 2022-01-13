@@ -7,9 +7,15 @@ import {
   MinLength,
   IsDate,
   IsDecimal,
+  IsNumber,
+  IsOptional,
 } from 'class-validator';
 
 export class productsDto {
+  @IsNumber()
+  @IsOptional()
+  id: number;
+
   @IsString()
   @MinLength(5)
   @MaxLength(10)
@@ -19,7 +25,7 @@ export class productsDto {
   @IsString()
   @MinLength(5)
   @MaxLength(15)
-  desc: string;
+  description: string;
 
   @IsNotEmpty()
   @IsString()

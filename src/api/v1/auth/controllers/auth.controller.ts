@@ -25,11 +25,14 @@ import { AuthGuard as AuthenticationGuard } from '../guard/auth.guard';
 import { Response } from 'express';
 import { validate, ValidationError, validateOrReject } from 'class-validator';
 import { UserService } from '../../user/service/user.service';
+import { User } from '../../user/interface/user';
+import { AuthService } from '../service/auth.service';
 
 @Controller('Auth')
 export class AuthController {
   constructor(
     protected userService: UserService,
+    protected authService: AuthService,
     public readonly responseService: ResponseService,
     public readonly consoleService: ConsoleService,
   ) {}
@@ -39,8 +42,13 @@ export class AuthController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
-  async login(@Body() User: any, @Res() res: Response) {
+  async login(@Body() user: User, @Res() res: Response) {
     try {
+      this.responseService.successResponse(
+        true,
+        await this.authService.login(user),
+        res,
+      );
     } catch (error) {
       return this.responseService.serverFailureResponse(error.message, res);
     }

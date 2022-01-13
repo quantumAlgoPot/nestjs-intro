@@ -87,21 +87,4 @@ export class UserService {
       .select('username')
       .lean();
   }
-
-  private findUser(id: number): [User, number] {
-    this.consoleService.print(this.user);
-    const userIndex = this.user.findIndex((user) => user.id == id);
-    const user = this.user[userIndex];
-    if (!user) {
-      this.consoleService.print('returning null');
-      return null;
-    }
-    this.consoleService.print('user' + user + ' userIndex ' + userIndex);
-    return [user, userIndex];
-  }
-
-  async findOne(username: string): Promise<User | undefined> {
-    this.consoleService.print(this.user);
-    return this.user.find((user) => user.username === username);
-  }
 }

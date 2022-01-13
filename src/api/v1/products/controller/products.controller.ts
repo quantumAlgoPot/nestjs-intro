@@ -42,17 +42,15 @@ export class ProductsController {
         }
       });
 
-      const generatedId = this.productService.insertProduct(
-        product.title,
-        product.desc,
-        product.price,
-      );
+      const generatedId = this.productService.insertProduct(product);
       this.responseService.successResponse(true, { id: generatedId }, res);
     } catch (error) {
       return this.responseService.serverFailureResponse(error.message, res);
     }
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   retrieveAllProducts(@Res() res: Response) {
     try {
@@ -66,8 +64,10 @@ export class ProductsController {
     }
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get(':id')
-  retrievSingleProduct(@Param('id') productId: string, @Res() res: Response) {
+  retrievSingleProduct(@Param('id') productId: number, @Res() res: Response) {
     try {
       const product = this.productService.getSingleProduct(productId);
       this.consoleService.print(product);
@@ -85,21 +85,16 @@ export class ProductsController {
     }
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Patch(':id')
   updateSingleProduct(
     @Param('id') productId: string,
-    @Body('title') prodTitle: string,
-    @Body('desc') prodDesc: string,
-    @Body('price') prodPrice: string,
+    @Body() toBeProduct: Products,
     @Res() res: Response,
   ) {
     try {
-      const product = this.productService.updateSingleProduct(
-        productId,
-        prodTitle,
-        prodDesc,
-        prodPrice,
-      );
+      const product = this.productService.updateSingleProduct(toBeProduct);
       this.consoleService.print(product);
       if (product) {
         return this.responseService.successResponse(true, product, res);
@@ -115,6 +110,8 @@ export class ProductsController {
     }
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Delete(':id')
   removeProduct(@Param('id') prodId: string, @Res() res: Response) {
     try {

@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Res,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -20,6 +21,7 @@ import { User } from '../interface/user';
 import { UserService } from '../service/user.service';
 import { Response } from 'express';
 import { validate, ValidationError, validateOrReject } from 'class-validator';
+import { JwtGuard } from '../../auth/guard/jwt.guard';
 
 @Controller('User')
 export class UserController {
@@ -29,9 +31,9 @@ export class UserController {
     public readonly consoleService: ConsoleService,
   ) {}
 
-  @Post()
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
+  @Post()
   async addProduct(@Body() user: userDto, @Res() res: Response) {
     try {
       validate(user).then((errors) => {
@@ -47,6 +49,9 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   async retrieveAllUsers(@Res() res: Response) {
     try {
@@ -60,6 +65,9 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get(':id')
   async retrievSingleUser(@Param('id') UserId: number, @Res() res: Response) {
     try {
@@ -79,9 +87,10 @@ export class UserController {
     }
   }
 
-  @Patch(':id')
+  @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
+  @Patch(':id')
   async updateSingleUser(
     @Param('id') idOfUser: any,
     @Body() user: User,
@@ -104,6 +113,9 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Delete(':id')
   async removeUser(@Param('id') userId: number, @Res() res: Response) {
     try {
