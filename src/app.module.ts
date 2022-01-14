@@ -10,6 +10,7 @@ import { ConsoleService } from './utils/console/console.service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from './config/config.module';
+// import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './api/v1/auth/auth.module';
 import { AuthController } from './api/v1/auth/controllers/auth.controller';

@@ -34,7 +34,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
-  async addProduct(@Body() user: userDto, @Res() res: Response) {
+  async addUser(@Body() user: userDto, @Res() res: Response) {
     try {
       validate(user).then((errors) => {
         if (errors.length > 0) {
@@ -117,7 +117,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Delete(':id')
-  async removeUser(@Param('id') userId: number, @Res() res: Response) {
+  async removeUser(@Param('id') userId: string, @Res() res: Response) {
     try {
       const deletedUser = await this.userService.deleteUser(userId);
       return this.responseService.successResponse(true, deletedUser, res);

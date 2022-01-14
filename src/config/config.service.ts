@@ -8,7 +8,8 @@ import { ConsoleService } from 'src/utils/console/console.service';
 export class ConfigService {
   private readonly envConfig: ConfigInterface;
   constructor(private readonly consoleService: ConsoleService) {
-    dotenv.config();
+    dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+    this.consoleService.print(process.cwd() + '@12 line' + process.env.PORT);
     const config: { [name: string]: string } = process.env;
     const parsedConfig = JSON.parse(JSON.stringify(config));
     this.envConfig = this.validateInput(parsedConfig);
@@ -49,16 +50,16 @@ export class ConfigService {
   }
 
   get port(): string {
-    return this.envConfig.PORT;
+    return '3001';
   }
 
   get mongoUri(): string {
     // this.consoleService.print(this.envConfig.MONGO_URI);
-    return this.envConfig.MONGO_URI;
+    return 'mongodb+srv://admin:Q4szdASIwOSZjnaK@cluster0.o6m7d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
   }
 
   get jwtKey(): string {
     // this.consoleService.print(this.envConfig.MONGO_URI);
-    return this.envConfig.jwt_token;
+    return 'mynameiskryptomind';
   }
 }

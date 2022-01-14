@@ -14,7 +14,7 @@ import {
 export class productsDto {
   @IsNumber()
   @IsOptional()
-  id: number;
+  id: string;
 
   @IsString()
   @MinLength(5)

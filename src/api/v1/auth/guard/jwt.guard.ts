@@ -15,20 +15,24 @@ export class JwtGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    const breakedToken: any = this.jwtService.decode(
-      request.headers.authorization.replace('Bearer ', ''),
-    );
-    this.consoleService.print(breakedToken);
-    if (breakedToken == null) return false;
-    return this.authService
-      .validateUser(breakedToken.username, breakedToken.password)
-      .then((userCheck) => {
-        if (userCheck != null) {
-          this.consoleService.print(true);
-          return true;
-        }
-        this.consoleService.print(false);
-        return false;
-      });
+    try {
+      const breakedToken: any = this.jwtService.decode(
+        request.headers.authorization.replace('Bearer ', ''),
+      );
+      this.consoleService.print(breakedToken);
+      if (breakedToken == null) return false;
+      return this.authService
+        .validateUser(breakedToken.username, breakedToken.password)
+        .then((userCheck) => {
+          if (userCheck != null) {
+            this.consoleService.print(true);
+            return true;
+          }
+          this.consoleService.print(false);
+          return false;
+        });
+    } catch (error) {
+      return false;
+    }
   }
 }

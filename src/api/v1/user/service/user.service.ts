@@ -74,7 +74,7 @@ export class UserService {
     }
   }
 
-  async deleteUser(userId: number): Promise<UserEntity> {
+  async deleteUser(userId: string): Promise<UserEntity> {
     return await this.userModel
       .findByIdAndUpdate(
         {

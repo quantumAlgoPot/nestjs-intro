@@ -26,7 +26,7 @@ export class ProductsService {
       .select('title description price');
   }
 
-  async getSingleProduct(productId: number) {
+  async getSingleProduct(productId: any) {
     return await this.productsModel
       .findOne({
         _id: productId,
@@ -37,8 +37,7 @@ export class ProductsService {
   }
 
   async updateSingleProduct(product: Products) {
-    this.consoleService.print(product);
-    if ((await this.getSingleProduct(product.id)) != null) {
+    if (await this.getSingleProduct(product.id)) {
       // eslint-disable-next-line no-var
       var toBeUpdatedProduct: any = {};
       if (product.title) {

@@ -32,17 +32,16 @@ export class ProductsController {
   @Post()
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
-  addProduct(@Body() product: productsDto, @Res() res: Response) {
+  async addProduct(@Body() product: productsDto, @Res() res: Response) {
     try {
       validate(product).then((errors) => {
-        console.log(errors);
         if (errors.length > 0) {
           console.log(errors);
           this.responseService.badRequestResponse(errors, res);
         }
       });
 
-      const generatedId = this.productService.insertProduct(product);
+      const generatedId = await this.productService.insertProduct(product);
       this.responseService.successResponse(true, { id: generatedId }, res);
     } catch (error) {
       return this.responseService.serverFailureResponse(error.message, res);
@@ -52,11 +51,11 @@ export class ProductsController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
-  retrieveAllProducts(@Res() res: Response) {
+  async retrieveAllProducts(@Res() res: Response) {
     try {
       return this.responseService.successResponse(
         true,
-        this.productService.getAllProducts(),
+        await this.productService.getAllProducts(),
         res,
       );
     } catch (error) {
@@ -67,9 +66,13 @@ export class ProductsController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get(':id')
-  retrievSingleProduct(@Param('id') productId: number, @Res() res: Response) {
+  async retrievSingleProduct(
+    @Param('id') productId: string,
+    @Res() res: Response,
+  ) {
     try {
-      const product = this.productService.getSingleProduct(productId);
+      this.consoleService.print(productId);
+      const product = await this.productService.getSingleProduct(productId);
       this.consoleService.print(product);
       if (product) {
         return this.responseService.successResponse(true, product, res);
@@ -88,14 +91,17 @@ export class ProductsController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Patch(':id')
-  updateSingleProduct(
+  async updateSingleProduct(
     @Param('id') productId: string,
     @Body() toBeProduct: Products,
     @Res() res: Response,
   ) {
     try {
-      const product = this.productService.updateSingleProduct(toBeProduct);
-      this.consoleService.print(product);
+      toBeProduct.id = productId;
+      const product = await this.productService.updateSingleProduct(
+        toBeProduct,
+      );
+      this.consoleService.print('On Line 104 @' + product);
       if (product) {
         return this.responseService.successResponse(true, product, res);
       } else {
@@ -113,9 +119,10 @@ export class ProductsController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Delete(':id')
-  removeProduct(@Param('id') prodId: string, @Res() res: Response) {
+  async removeProduct(@Param('id') prodId: string, @Res() res: Response) {
     try {
-      this.productService.deleteProduct(prodId);
+      const deletedProduct = await this.productService.deleteProduct(prodId);
+      return this.responseService.successResponse(true, deletedProduct, res);
       return null;
     } catch (error) {
       return this.responseService.serverFailureResponse(error.message, res);
