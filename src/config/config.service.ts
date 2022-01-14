@@ -3,13 +3,14 @@ import * as Joi from 'joi';
 import { Injectable } from '@nestjs/common';
 import { ConfigInterface } from './interface/config.interface';
 import { ConsoleService } from 'src/utils/console/console.service';
+const consoleService = new ConsoleService();
 
 @Injectable()
 export class ConfigService {
   private readonly envConfig: ConfigInterface;
-  constructor(private readonly consoleService: ConsoleService) {
-    dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
-    this.consoleService.print(process.cwd() + '@12 line' + process.env.PORT);
+  constructor() {
+    dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
+    consoleService.print(process.cwd() + '@12 line' + process.env.PORT);
     const config: { [name: string]: string } = process.env;
     const parsedConfig = JSON.parse(JSON.stringify(config));
     this.envConfig = this.validateInput(parsedConfig);
@@ -41,7 +42,7 @@ export class ConfigService {
     if (error) {
       throw new Error(`Config validation error: ${error.message}`);
     }
-    this.consoleService.print('Joi Schema Verified in config.service.ts');
+    consoleService.print('Joi Schema Verified in config.service.ts');
     return validatedEnvConfig;
   };
 
@@ -50,16 +51,16 @@ export class ConfigService {
   }
 
   get port(): string {
-    return '3001';
+    return this.envConfig.PORT;
   }
 
   get mongoUri(): string {
     // this.consoleService.print(this.envConfig.MONGO_URI);
-    return 'mongodb+srv://admin:Q4szdASIwOSZjnaK@cluster0.o6m7d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+    return this.envConfig.MONGO_URI;
   }
 
   get jwtKey(): string {
     // this.consoleService.print(this.envConfig.MONGO_URI);
-    return 'mynameiskryptomind';
+    return this.envConfig.jwt_token;
   }
 }

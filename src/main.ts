@@ -10,9 +10,12 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { ValidationPipe } from '@nestjs/common'; // import built-in ValidationPipe
+import { ConfigService } from './config/config.service';
+
 declare const module: any;
 const consoleService = new ConsoleService();
-import { ValidationPipe } from '@nestjs/common'; // import built-in ValidationPipe
+const configService = new ConfigService();
 
 async function bootstrap() {
   if (module.hot) {
@@ -43,6 +46,6 @@ async function bootstrap() {
   // app.use(helmet());
 
   consoleService.print('App is lising on 127.0.0.0:3000');
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(configService.port, '0.0.0.0');
 }
 bootstrap();
