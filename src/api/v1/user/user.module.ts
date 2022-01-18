@@ -17,6 +17,7 @@ import { UserService } from './service/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserEntity, UserSchema } from './entity/user.entity';
 import { DuplicateMiddleware } from './middleware/duplicate.middleware';
+import { UserCronService } from './cronjob/user-cron.service';
 
 @Module({
   controllers: [UserController],
@@ -24,13 +25,22 @@ import { DuplicateMiddleware } from './middleware/duplicate.middleware';
     forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
   ],
-  providers: [UserService, ResponseService, ConsoleService, AuthService],
+  providers: [
+    UserService,
+    ResponseService,
+    ConsoleService,
+    AuthService,
+    UserCronService,
+  ],
   exports: [
     UserService,
     MongooseModule.forFeature([{ name: UserEntity.name, schema: UserSchema }]),
   ],
 })
 export class UserModule implements NestModule {
+  constructor(private readonly userService: UserCronService) {
+    // userService.handleCron();
+  }
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(BodyMiddleware).forRoutes('user');
     consumer

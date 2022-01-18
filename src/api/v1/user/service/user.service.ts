@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConsoleService } from 'src/utils/console/console.service';
 import { UserDocument, UserEntity } from '../entity/user.entity';
 import { User } from '../interface/user';
+import { Connection } from 'mongoose';
 
 @Injectable()
 export class UserService {
-  private user: User[] = [];
-
   constructor(
     private readonly consoleService: ConsoleService,
     @InjectModel(UserEntity.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   async insertUser(user: User): Promise<UserEntity> {
@@ -48,29 +48,49 @@ export class UserService {
   }
 
   async updateSingleUser(user: User) {
-    this.consoleService.print(user);
-    if ((await this.getSingleUser(user.id)) != null) {
-      // eslint-disable-next-line no-var
-      var toBeUpdatedUser: any = {};
-      if (user.username) {
-        toBeUpdatedUser.username = user.username;
+    // Starting Session for Transaction
+    const session = await this.connection.startSession();
+    try {
+      // Starting Transaction
+      session.startTransaction();
+
+      if ((await this.getSingleUser(user.id)) != null) {
+        // eslint-disable-next-line no-var
+        var toBeUpdatedUser: any = {};
+        if (user.username) {
+          toBeUpdatedUser.username = user.username;
+        }
+        if (user.password) {
+          toBeUpdatedUser.password = user.password;
+        }
+        const updateUser = await this.userModel
+          .findByIdAndUpdate(
+            {
+              _id: user.id,
+              isDeleted: false,
+            },
+            toBeUpdatedUser,
+          )
+          .select('username, password')
+          .lean();
+
+        // After succesfully completion commit the transaction
+        await session.commitTransaction();
+        // Must close the session
+        session.endSession();
+        return updateUser;
+      } else {
+        // Must close the session
+        session.endSession();
+        return null;
       }
-      if (user.password) {
-        toBeUpdatedUser.password = user.password;
-      }
-      return await this.userModel
-        .findByIdAndUpdate(
-          {
-            _id: user.id,
-            isDeleted: false,
-          },
-          toBeUpdatedUser,
-        )
-        .select('username, password')
-        .lean();
-    } else {
-      this.consoleService.print('On line 43 of User.Service.ts');
-      return null;
+    } catch (error) {
+      // Roll Back Transaction
+      await session.abortTransaction();
+      // Must close the session
+      session.endSession();
+
+      return error.message;
     }
   }
 

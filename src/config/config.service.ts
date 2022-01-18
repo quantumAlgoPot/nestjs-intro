@@ -10,7 +10,6 @@ export class ConfigService {
   private readonly envConfig: ConfigInterface;
   constructor() {
     dotenv.config({ path: `env/.env.${process.env.NODE_ENV}` });
-    consoleService.print(process.cwd() + '@12 line' + process.env.PORT);
     const config: { [name: string]: string } = process.env;
     const parsedConfig = JSON.parse(JSON.stringify(config));
     this.envConfig = this.validateInput(parsedConfig);
@@ -55,6 +54,11 @@ export class ConfigService {
   }
 
   get mongoUri(): string {
+    // this.consoleService.print(this.envConfig.MONGO_URI);
+    return this.envConfig.MONGO_URI;
+  }
+
+  get localMongoUri(): string {
     // this.consoleService.print(this.envConfig.MONGO_URI);
     return this.envConfig.MONGO_URI;
   }

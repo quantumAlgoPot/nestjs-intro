@@ -7,13 +7,15 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from 'src/config/config.service';
 import * as dotenv from 'dotenv';
+
+const confiService = new ConfigService();
 dotenv.config();
 @Module({
   imports: [
     forwardRef(() => UserModule),
     PassportModule,
     JwtModule.register({
-      secret: process.env.jwt_token,
+      secret: confiService.jwtKey,
       // signOptions: { expiresIn: '60s' },
     }),
   ],
@@ -21,7 +23,7 @@ dotenv.config();
   exports: [
     AuthService,
     JwtModule.register({
-      secret: process.env.jwt_token,
+      secret: confiService.jwtKey,
       // signOptions: { expiresIn: '60s' },
     }),
   ],

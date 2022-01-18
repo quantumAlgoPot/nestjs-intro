@@ -18,6 +18,7 @@ import { AuthService } from './api/v1/auth/service/auth.service';
 import { LocalStrategy } from './api/v1/auth/service/local.strategy.service';
 import { UserService } from './api/v1/user/service/user.service';
 import { UserController } from './api/v1/user/controller/user.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UserController } from './api/v1/user/controller/user.controller';
     ConfigModule,
     DatabaseModule,
     AuthModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [
     AppController,
