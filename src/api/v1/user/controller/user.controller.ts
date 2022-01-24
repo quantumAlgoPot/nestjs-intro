@@ -69,10 +69,9 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get(':id')
-  async retrievSingleUser(@Param('id') UserId: number, @Res() res: Response) {
+  async retrievSingleUser(@Param('id') UserId: any, @Res() res: Response) {
     try {
       const User = await this.userService.getSingleUser(UserId);
-      this.consoleService.print(User);
       if (User) {
         return this.responseService.successResponse(true, User[0], res);
       } else {

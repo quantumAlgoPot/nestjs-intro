@@ -54,17 +54,14 @@ export class ConfigService {
   }
 
   get mongoUri(): string {
-    // this.consoleService.print(this.envConfig.MONGO_URI);
     return this.envConfig.MONGO_URI;
   }
 
   get localMongoUri(): string {
-    // this.consoleService.print(this.envConfig.MONGO_URI);
     return this.envConfig.MONGO_URI;
   }
 
   get jwtKey(): string {
-    // this.consoleService.print(this.envConfig.MONGO_URI);
     return this.envConfig.jwt_token;
   }
 }

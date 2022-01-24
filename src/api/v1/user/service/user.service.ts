@@ -27,7 +27,7 @@ export class UserService {
       .select('username password');
   }
 
-  async getSingleUser(userId: number): Promise<UserEntity> {
+  async getSingleUser(userId: any): Promise<UserEntity> {
     return await this.userModel
       .findOne({
         _id: userId,
